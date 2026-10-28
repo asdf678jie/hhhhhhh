@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧财税管理智能体 - 小高有限公司</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        gray: '#86909C'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-item.active{
+            background-color: #165DFF;
+            color:white;
+        }
+        .tab-content{
+            display: none;
+        }
+        .tab-content.show{
+            display:block;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- 顶部导航 -->
+    <header class="bg-primary text-white px-6 py-3 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+            <i class="fa fa-calculator text-xl"></i>
+            <h1 class="text-lg font-bold">智慧财税管理智能体</h1>
+            <span class="bg-white/20 px-2 py-1 rounded text-sm">小高有限公司 · 陕西西安长安区</span>
+        </div>
+        <div class="flex items-center gap-5">
+            <div class="relative">
+                <i class="fa fa-bell-o text-lg cursor-pointer"></i>
+                <span class="absolute -top-1 -right-1 bg-danger text-xs rounded-full w-4 h-4 text-center">3</span>
+            </div>
+            <span><i class="fa fa-user-circle-o mr-1"></i>财税管理员</span>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- 左侧菜单栏 -->
+        <aside class="w-56 bg-white min-h-[calc(100vh-52px)] shadow p-3">
+            <div class="sidebar-item active rounded px-3 py-2 cursor-pointer mb-1" data-target="home">
+                <i class="fa fa-home mr-2"></i>企业中心
+            </div>
+            <div class="sidebar-item rounded px-3 py-2 cursor-pointer mb-1 hover:bg-slate-100" data-target="upload">
+                <i class="fa fa-upload mr-2"></i>数据上传
+            </div>
+            <div class="sidebar-item rounded px-3 py-2 cursor-pointer mb-1 hover:bg-slate-100" data-target="taxcalc">
+                <i class="fa fa-file-text-o mr-2"></i>计税申报
+            </div>
+            <div class="sidebar-item rounded px-3 py-2 cursor-pointer mb-1 hover:bg-slate-100" data-target="policy">
+                <i class="fa fa-book mr-2"></i>政策中心
+            </div>
+            <div class="sidebar-item rounded px-3 py-2 cursor-pointer mb-1 hover:bg-slate-100" data-target="risk">
+                <i class="fa fa-exclamation-triangle mr-2"></i>风险看板
+            </div>
+            <div class="sidebar-item rounded px-3 py-2 cursor-pointer mb-1 hover:bg-slate-100" data-target="chat">
+                <i class="fa fa-comments-o mr-2"></i>智能问答
+            </div>
+            <div class="sidebar-item rounded px-3 py-2 cursor-pointer mb-1 hover:bg-slate-100" data-target="notice">
+                <i class="fa fa-bullhorn mr-2"></i>消息提醒
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="flex-1 p-6">
+            <!-- 企业中心 -->
+            <div id="home" class="tab-content show">
+                <h2 class="text-xl font-bold mb-4">企业中心</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-gray text-sm">企业名称</div>
+                        <div class="font-medium">小高有限公司</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-gray text-sm">注册地址</div>
+                        <div class="font-medium">陕西省西安市长安区</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-gray text-sm">纳税人身份</div>
+                        <div class="font-medium">增值税一般纳税人</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-gray text-sm">所属行业</div>
+                        <div class="font-medium">现代服务业</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-gray text-sm">企业规模</div>
+                        <div class="font-medium">小型企业</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-gray text-sm">申报所属期</div>
+                        <div class="font-medium">2026年09月</div>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="font-bold mb-3">本月财税概览</h3>
+                    <canvas id="overviewChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- 数据上传 -->
+            <div id="upload" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">数据上传</h2>
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <div class="mb-4">
+                        <label class="block mb-2 font-medium">财务报表（Excel）</label>
+                        <div class="border-2 border-dashed border-slate-300 rounded p-6 text-center">
+                            <i class="fa fa-cloud-upload text-3xl text-gray"></i>
+                            <p class="mt-2">点击或拖拽文件上传</p>
+                            <input type="file" class="hidden" id="file1">
+                            <button onclick="document.getElementById('file1').click()" class="mt-2 px-4 py-2 bg-primary text-white rounded">选择文件</button>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block mb-2 font-medium">发票、凭证、合同（PDF/图片）</label>
+                        <div class="border-2 border-dashed border-slate-300 rounded p-6 text-center">
+                            <i class="fa fa-file-image-o text-3xl text-gray"></i>
+                            <p class="mt-2">支持扫描件、照片、PDF，NLP自动抽取财税信息</p>
+                            <input type="file" multiple class="hidden" id="file2">
+                            <button onclick="document.getElementById('file2').click()" class="mt-2 px-4 py-2 bg-primary text-white rounded">选择文件</button>
+                        </div>
+                    </div>
+                    <button class="px-5 py-2 bg-success text-white rounded">开始采集、清洗、标准化处理</button>
+                    <p class="text-gray mt-3 text-sm">说明：系统自动完成去重、异常校验、业务-科目-税种勾稽关联</p>
+                </div>
+            </div>
+
+            <!-- 计税申报 -->
+            <div id="taxcalc" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">计税申报 · 多税种一键申报</h2>
+                <div class="bg-white p-5 rounded-lg shadow mb-4">
+                    <h3 class="font-bold mb-3">可选税种</h3>
+                    <div class="flex gap-4 mb-4">
+                        <label class="flex items-center gap-1"><input type="checkbox" checked> 增值税</label>
+                        <label class="flex items-center gap-1"><input type="checkbox" checked> 企业所得税</label>
+                        <label class="flex items-center gap-1"><input type="checkbox"> 附加税费</label>
+                        <label class="flex items-center gap-1"><input type="checkbox"> 印花税</label>
+                    </div>
+                    <button class="px-4 py-2 bg-primary text-white rounded mr-2">自动计税 & 生成申报表</button>
+                    <button class="px-4 py-2 bg-warning text-white rounded">人工复核调整</button>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="font-bold mb-3">申报列表</h3>
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-2 text-left">税种</th>
+                                <th class="p-2 text-left">所属期</th>
+                                <th class="p-2 text-left">应纳税额(元)</th>
+                                <th class="p-2 text-left">状态</th>
+                                <th class="p-2 text-left">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="p-2">增值税</td>
+                                <td class="p-2">2026-09</td>
+                                <td class="p-2">12865.40</td>
+                                <td class="p-2"><span class="text-warning">待申报</span></td>
+                                <td class="p-2">
+                                    <button class="text-primary">下载申报表</button>
+                                    <button class="text-primary ml-3">提交申报</button>
+                                </td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-2">企业所得税（季度预缴）</td>
+                                <td class="p-2">2026-Q3</td>
+                                <td class="p-2">8521.70</td>
+                                <td class="p-2"><span class="text-success">已申报归档</span></td>
+                                <td class="p-2"><button class="text-primary">查看归档</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 政策中心 -->
+            <div id="policy" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">政策中心 · 智能匹配税收优惠</h2>
+                <div class="bg-white p-5 rounded-lg shadow mb-4">
+                    <h3 class="font-bold mb-3">企业画像匹配结果（小高有限公司，西安长安区，小型现代服务企业）</h3>
+                    <div class="space-y-3">
+                        <div class="border-l-4 border-success pl-3 py-1">
+                            <div class="font-medium">【可享受】小微企业所得税优惠政策</div>
+                            <div class="text-sm text-gray">测算减免税额：约 4260.85 元；备查资料：从业人数、资产总额、应纳税所得额证明</div>
+                        </div>
+                        <div class="border-l-4 border-success pl-3 py-1">
+                            <div class="font-medium">【可享受】增值税小规模/一般纳税人相关加计抵减（现代服务业）</div>
+                            <div class="text-sm text-gray">适配：行业为现代服务，符合加计抵减条件</div>
+                        </div>
+                        <div class="border-l-4 border-slate-400 pl-3 py-1">
+                            <div class="font-medium">【暂不满足】高新技术企业15%优惠税率</div>
+                            <div class="text-sm text-gray">缺失条件：无高新技术企业认定证书</div>
+                        </div>
+                        <div class="border-l-4 border-primary pl-3 py-1">
+                            <div class="font-medium">【已享受】六税两费减免政策</div>
+                            <div class="text-sm text-gray">已在往期申报享受，系统持续跟踪政策有效期</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="font-bold mb-3">政策库检索</h3>
+                    <input type="text" placeholder="输入政策关键词，NLP检索法规、解读、适用条件" class="border w-full p-2 rounded">
+                    <button class="mt-3 px-4 py-2 bg-primary text-white rounded">检索并知识图谱溯源</button>
+                </div>
+            </div>
+
+            <!-- 风险看板 -->
+            <div id="risk" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">涉税风险看板</h2>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-bold mb-2">风险等级统计</h3>
+                        <canvas id="riskChart" height="160"></canvas>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="font-bold mb-2">风险概览</h3>
+                        <p><i class="fa fa-circle text-danger mr-1"></i>高风险：1项</p>
+                        <p><i class="fa fa-circle text-warning mr-1"></i>中风险：2项</p>
+                        <p><i class="fa fa-circle text-success mr-1"></i>低风险：3项</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="font-bold mb-3">风险明细 & 整改建议</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-red-50 border border-red-200 rounded">
+                            <div class="font-medium text-danger">高风险：进项发票抵扣勾稽异常</div>
+                            <div class="text-sm mt-1">风险描述：本期部分进项发票对应业务与企业经营范围匹配度偏低；模型识别异常指标</div>
+                            <div class="text-sm mt-1">✅整改建议：复核业务合同、入库单据，留存业务真实性佐证资料</div>
+                        </div>
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded">
+                            <div class="font-medium text-warning">中风险：费用列支波动同比增幅过大</div>
+                            <div class="text-sm mt-1">✅整改建议：整理大额费用凭证，做好税会差异台账备查</div>
+                        </div>
+                    </div>
+                    <button class="mt-4 px-4 py-2 bg-primary text-white rounded">导出完整涉税风险分析报告</button>
+                </div>
+            </div>
+
+            <!-- 智能问答 -->
+            <div id="chat" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">财税智能问答（NLP+税收知识图谱推理）</h2>
+                <div class="bg-white rounded-lg shadow h-[420px] flex flex-col">
+                    <div class="p-4 flex-1 overflow-y-auto space-y-3" id="chatbox">
+                        <div class="bg-slate-100 p-3 rounded max-w-lg">
+                            <span class="font-medium">智能体：</span>您好，小高财税智能体已就绪。您可以咨询计税、优惠政策、涉税风险、申报流程相关问题。
+                        </div>
+                    </div>
+                    <div class="border-t p-3 flex gap-2">
+                        <input id="chatinput" type="text" placeholder="例如：西安长安区小微企业六税两费还能享受吗？" class="flex-1 border p-2 rounded">
+                        <button onclick="sendChat()" class="px-4 py-2 bg-primary text-white rounded">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 消息提醒 -->
+            <div id="notice" class="tab-content">
+                <h2 class="text-xl font-bold mb-4">站内提醒：政策变更、申报期限、合规预警</h2>
+                <div class="bg-white p-5 rounded-lg shadow space-y-4">
+                    <div class="p-3 border-l-4 border-warning bg-amber-50 rounded">
+                        <div class="font-medium">申报期限提醒</div>
+                        <div class="text-sm">9月增值税及附加税申报截止：10月25日，请及时完成申报，避免逾期</div>
+                    </div>
+                    <div class="p-3 border-l-4 border-primary bg-blue-50 rounded">
+                        <div class="font-medium">政策更新通知</div>
+                        <div class="text-sm">陕西省小微企业税费优惠细则更新，智能体已重新完成企业政策适配测算</div>
+                    </div>
+                    <div class="p-3 border-l-4 border-danger bg-red-50 rounded">
+                        <div class="font-medium">涉税预警提醒</div>
+                        <div class="text-sm">检测到1项高涉税风险，请前往风险看板查看整改方案</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 侧边栏切换
+        const items = document.querySelectorAll('.sidebar-item');
+        const tabs = document.querySelectorAll('.tab-content');
+        items.forEach(item=>{
+            item.onclick = ()=>{
+                const targetId = item.dataset.target;
+                items.forEach(i=>i.classList.remove('active'));
+                item.classList.add('active');
+                tabs.forEach(t=>t.classList.remove('show'));
+                document.getElementById(targetId).classList.add('show');
+            }
+        })
+
+        // 概览图表
+        new Chart(document.getElementById('overviewChart'),{
+            type:'bar',
+            data:{
+                labels:['增值税','企业所得税','附加税','印花税'],
+                datasets:[{
+                    label:'本期测算税额（元）',
+                    data:[12865.40,8521.70,1543.85,320.00],
+                    backgroundColor:'#165DFF80'
+                }]
+            }
+        })
+        // 风险饼图
+        new Chart(document.getElementById('riskChart'),{
+            type:'pie',
+            data:{
+                labels:['高风险','中风险','低风险'],
+                datasets:[{
+                    data:[1,2,3],
+                    backgroundColor:['#F53F3F','#FF7D00','#00B42A']
+                }]
+            }
+        })
+
+        // 智能问答简易交互
+        function sendChat(){
+            const box = document.getElementById('chatbox');
+            const input = document.getElementById('chatinput');
+            const msg = input.value.trim();
+            if(!msg) return;
+            box.innerHTML += `<div class="bg-primary/10 p-3 rounded max-w-lg ml-auto"><span class="font-medium">我：</span>${msg}</div>`;
+            input.value = '';
+            setTimeout(()=>{
+                box.innerHTML += `<div class="bg-slate-100 p-3 rounded max-w-lg"><span class="font-medium">智能体：</span>已调用税收知识图谱、NLP解析，结合【小高有限公司·西安长安区】企业画像完成推理，相关结果可前往政策中心与风险看板查看详细报告。</div>`;
+                box.scrollTop = box.scrollHeight;
+            },600)
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>
